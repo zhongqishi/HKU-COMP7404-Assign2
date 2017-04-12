@@ -5,6 +5,8 @@ import random, util
 from game import Agent
 
 class ReflexAgent(Agent):
+
+   
     """
       A reflex agent chooses an action at each choice point by examining
       its alternatives via a state evaluation function.
@@ -13,8 +15,6 @@ class ReflexAgent(Agent):
       it in any way you see fit, so long as you don't touch our method
       headers.
     """
-
-
     def getAction(self, gameState):
         """
         You do not need to change this method, but you're welcome to.
@@ -56,14 +56,30 @@ class ReflexAgent(Agent):
         prevFood = currentGameState.getFood()
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
+
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
-        
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
-        
+        baseScore = successorGameState.getScore()
+        foods = currentGameState.getFood().asList()
+
+        maxDistance=-float("inf")
+        for food in foods:
+            if maxDistance<-manhattanDistance(food,newPos):
+              maxDistance=-manhattanDistance(food,newPos)
+
+        baseScore+=maxDistance
+
+        if newPos == currentGameState.getPacmanPosition():
+            baseScore-=999999999
+
+        for ghostState in newGhostStates:
+            if ghostState.getPosition() == newPos and ghostState.scaredTimer is 0:
+                baseScore-=999999999 
+  
+        return baseScore
+
 
 def scoreEvaluationFunction(currentGameState):
     """
