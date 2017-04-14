@@ -280,7 +280,55 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
+        result=self.minMax(0,gameState,0)
+        
+        return result[1]
         util.raiseNotDefined()
+
+    def minMax(self,agentID,gameState,depth):
+       
+        resultAction=""
+
+        if agentID==gameState.getNumAgents():
+            agentID=0
+            depth+=1
+
+        if depth==self.depth:
+            return (self.evaluationFunction(gameState),0)
+
+        if not gameState.getLegalActions(agentID):
+            return (self.evaluationFunction(gameState),0)
+        
+        if agentID==0:
+          maxValue=-float('inf')
+          
+          for action in gameState.getLegalActions(agentID):
+            if action == "Stop":
+                continue
+            successor=gameState.generateSuccessor(agentID, action)
+            tmpValue=self.minMax(agentID+1,successor,depth)
+           
+            if tmpValue[0]>maxValue:
+              maxValue=tmpValue[0]
+              resultAction=action
+
+          return (maxValue,resultAction)
+
+        else:
+          #minValue=float('inf')
+          avgValue=0
+          indicator=0
+          for action in gameState.getLegalActions(agentID):
+            if action == "Stop":
+                continue
+            successor=gameState.generateSuccessor(agentID, action)
+            tmpValue=self.minMax(agentID+1,successor,depth)
+            indicator+=1
+            avgValue+=tmpValue[0]
+          
+          avgValue=avgValue/indicator
+          return (avgValue,0)
+      
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -288,8 +336,37 @@ def betterEvaluationFunction(currentGameState):
       evaluation function (question 5).
 
       DESCRIPTION: <write something here so we know what you did>
+        The Score are consist of:
+          1. BaseScore of the CurrentBoard
+          2. Distance to nearest Food
+          3. Distance to the ghost * 5
+          4. Distance to the Scared Ghost
+
     """
     "*** YOUR CODE HERE ***"
+    pacmanPos = currentGameState.getPacmanPosition()
+    ghostStates = currentGameState.getGhostStates()
+    "*** YOUR CODE HERE ***"
+    baseScore = currentGameState.getScore()
+    foods = currentGameState.getFood().asList()
+
+    minDistance=-float("inf")
+    for food in foods:
+        if minDistance>manhattanDistance(food,pacmanPos):
+          minDistance=manhattanDistance(food,pacmanPos)
+
+    if minDistance==-float("inf"):
+      minDistance=0
+    baseScore+=-minDistance
+
+    for ghostState in ghostStates:
+        if ghostState.scaredTimer==0:
+            baseScore+=-5*manhattanDistance(ghostState.getPosition(),pacmanPos)
+        if ghostState.scaredTimer>0:
+            baseScore+=-manhattanDistance(ghostState.getPosition(),pacmanPos)
+      
+    return baseScore
+
     util.raiseNotDefined()
 
 # Abbreviation
