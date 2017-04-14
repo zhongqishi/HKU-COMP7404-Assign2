@@ -110,86 +110,82 @@ class MultiAgentSearchAgent(Agent):
         self.index = 0 # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
+        self.start = True
 
 class MinimaxAgent(MultiAgentSearchAgent):
     """
-      Your minimax agent (question 2)
+    Your minimax agent (question 2)
     """
 
     def getAction(self, gameState):
         """
           Returns the minimax action from the current gameState using self.depth
           and self.evaluationFunction.
-
           Here are some method calls that might be useful when implementing minimax.
-
           gameState.getLegalActions(agentIndex):
             Returns a list of legal actions for an agent
             agentIndex=0 means Pacman, ghosts are >= 1
-
+          Directions.STOP:
+            The stop direction, which is always legal
           gameState.generateSuccessor(agentIndex, action):
             Returns the successor game state after an agent takes an action
-
           gameState.getNumAgents():
             Returns the total number of agents in the game
-
-          gameState.isWin():
-            Returns whether or not the game state is a winning state
-
-          gameState.isLose():
-            Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        #print("targetDepth",targetDepth)
-        #print("numberOfAgents",numberOfAgents)
-        result=self.minMax(0,gameState,0)
-        
-        return result[1]
-        util.raiseNotDefined()
 
-    def minMax(self,agentID,gameState,depth):
-       
+        result = self.minMax(gameState, 0, 0)
+        return result[0]
+
+    def minMax(self, gameState, agentID, depth): 
+        if agentID >= gameState.getNumAgents():
+            agentID = 0
+            depth += 1
+
+        if depth == self.depth:
+            return (0,self.evaluationFunction(gameState))
+
+        if agentID == 0:
+            return self.maxValue(gameState, agentID, depth)
+        else:
+            return self.minValue(gameState, agentID, depth)
+        
+    def maxValue(self, gameState, agentID, depth):
+        maxResult= -float("inf")
         resultAction=""
 
-        if agentID==gameState.getNumAgents():
-            agentID=0
-            depth+=1
-
-        if depth==self.depth:
-            return (self.evaluationFunction(gameState),0)
-
         if not gameState.getLegalActions(agentID):
-            return (self.evaluationFunction(gameState),0)
+            return (0,self.evaluationFunction(gameState))
+
+        for action in gameState.getLegalActions(agentID):
+            if action == "Stop":
+                continue
+            
+            tmpValue = self.minMax(gameState.generateSuccessor(agentID, action), agentID + 1, depth)
+
+            if maxResult<tmpValue[1]:
+              resultAction=action
+            maxResult = max(maxResult, tmpValue[1])
         
-        if agentID==0:
-          maxValue=-float('inf')
+        return (resultAction,maxResult)
 
-          for action in gameState.getLegalActions(agentID):
+    def minValue(self, gameState, agentID, depth):
+        minResult = float("inf")
+        resultAction=""
+        if not gameState.getLegalActions(agentID):
+            return (0,self.evaluationFunction(gameState))
+
+        for action in gameState.getLegalActions(agentID):
             if action == "Stop":
                 continue
-            successor=gameState.generateSuccessor(agentID, action)
-            tmpValue=self.minMax(agentID+1,successor,depth)
-           
-            if tmpValue[0]>maxValue:
-              maxValue=tmpValue[0]
-              resultAction=action
-            
-          return (maxValue,resultAction)
+            tmpValue = self.minMax(gameState.generateSuccessor(agentID, action), agentID + 1, depth)
 
-        else:
-          minValue=float('inf')
-         
-          for action in gameState.getLegalActions(agentID):
-            if action == "Stop":
-                continue
-            successor=gameState.generateSuccessor(agentID, action)
-            tmpValue=self.minMax(agentID+1,successor,depth)
-           
-            if tmpValue[0]<minValue:
-              minValue=tmpValue[0]
+            if minResult>tmpValue[1]:
               resultAction=action
-            
-          return (minValue,resultAction)
+            minResult = min(minResult, tmpValue[1])  
+
+        return (resultAction,minResult)
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -201,70 +197,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        result=self.AlphaBeta(0,gameState,0,-float('inf'),float('inf'))
-        
-        return result[1]
         util.raiseNotDefined()
-
-    def AlphaBeta(self,agentID,gameState,depth,alpha,beta):
-       
-        resultAction=""
-
-        if agentID==gameState.getNumAgents():
-            agentID=0
-            depth+=1
-
-        if depth==self.depth:
-            return (self.evaluationFunction(gameState),0)
-
-        if not gameState.getLegalActions(agentID):
-            return (self.evaluationFunction(gameState),0)
-        
-        if agentID==0:
-          "Max Value"
-          maxValue=-float('inf')
-
-          for action in gameState.getLegalActions(agentID):
-            if action == "Stop":
-                continue
-            successor=gameState.generateSuccessor(agentID, action)
-
-            tmpValue=self.AlphaBeta(agentID+1,successor,depth,alpha,beta)
-                  
-            if tmpValue[0]>maxValue:
-              maxValue=tmpValue[0]
-              resultAction=action
-
-            if tmpValue[0]>beta:
-              return (tmpValue[0],action)
-
-            if alpha<tmpValue[0]:
-              alpha=tmpValue[0]
-            
-          return (maxValue,resultAction)
-
-        else:
-          "Min Value"
-          minValue=float('inf')
-         
-          for action in gameState.getLegalActions(agentID):
-            if action == "Stop":
-                continue
-            successor=gameState.generateSuccessor(agentID, action)
-            tmpValue=self.AlphaBeta(agentID+1,successor,depth,alpha,beta)
-           
-            if tmpValue[0]<alpha:
-              return (tmpValue[0],action)
-
-            if tmpValue[0]<minValue:
-              minValue=tmpValue[0]
-              resultAction=action
-
-            if beta>tmpValue[0]:
-              beta=tmpValue[0]
-            
-            
-          return (minValue,resultAction)
         
 
 class ExpectimaxAgent(MultiAgentSearchAgent):

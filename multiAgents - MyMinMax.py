@@ -201,70 +201,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        result=self.AlphaBeta(0,gameState,0,-float('inf'),float('inf'))
-        
-        return result[1]
         util.raiseNotDefined()
-
-    def AlphaBeta(self,agentID,gameState,depth,alpha,beta):
-       
-        resultAction=""
-
-        if agentID==gameState.getNumAgents():
-            agentID=0
-            depth+=1
-
-        if depth==self.depth:
-            return (self.evaluationFunction(gameState),0)
-
-        if not gameState.getLegalActions(agentID):
-            return (self.evaluationFunction(gameState),0)
-        
-        if agentID==0:
-          "Max Value"
-          maxValue=-float('inf')
-
-          for action in gameState.getLegalActions(agentID):
-            if action == "Stop":
-                continue
-            successor=gameState.generateSuccessor(agentID, action)
-
-            tmpValue=self.AlphaBeta(agentID+1,successor,depth,alpha,beta)
-                  
-            if tmpValue[0]>maxValue:
-              maxValue=tmpValue[0]
-              resultAction=action
-
-            if tmpValue[0]>beta:
-              return (tmpValue[0],action)
-
-            if alpha<tmpValue[0]:
-              alpha=tmpValue[0]
-            
-          return (maxValue,resultAction)
-
-        else:
-          "Min Value"
-          minValue=float('inf')
-         
-          for action in gameState.getLegalActions(agentID):
-            if action == "Stop":
-                continue
-            successor=gameState.generateSuccessor(agentID, action)
-            tmpValue=self.AlphaBeta(agentID+1,successor,depth,alpha,beta)
-           
-            if tmpValue[0]<alpha:
-              return (tmpValue[0],action)
-
-            if tmpValue[0]<minValue:
-              minValue=tmpValue[0]
-              resultAction=action
-
-            if beta>tmpValue[0]:
-              beta=tmpValue[0]
-            
-            
-          return (minValue,resultAction)
         
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
