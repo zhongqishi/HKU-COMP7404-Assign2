@@ -118,7 +118,6 @@ class GameRules:
         """
         return self.deadTest(boards[0]) and self.deadTest(boards[1]) and self.deadTest(boards[2])
 
-
 class TicTacToeAgent():
     """
       When move first, the TicTacToeAgent should be able to chooses an action to always beat 
@@ -157,8 +156,7 @@ class TicTacToeAgent():
         self.stateDict["AB"]=stateAB
         self.stateDict["AD"]=stateAD
         self.winList=["CC","CB","BC","BB","A"]
-        "Empty is >>>C<<<-记住...."
-
+        "Empty is >>>C<<<...."
 
     def getAction(self, gameState, gameRules):
         gameBoards=gameState.boards
@@ -189,7 +187,6 @@ class TicTacToeAgent():
         
         util.raiseNotDefined()
 
-
     def judgeBoardState(self,board):
         xPositions={}
         for i in range(8):
@@ -198,12 +195,25 @@ class TicTacToeAgent():
         for i in range(9):
           if board[i]:
             xPositions[0].append(i)
-
-        for i in range(7):
-          tmpBoard=self.turnDegreeAndJudge(board,i+1)
+        #turn 90 180 270 degrees
+        for i in range(3):
+          tmpBoard=self.turnDegreeBoard(board,i+1)
           for m in range(9):
             if tmpBoard[m]:
               xPositions[i+1].append(m)
+
+        #0,1,2,3        
+        #Mirror of the bord
+        mirrorBoard=self.turnMirrorBoard(board)
+        for i in range(9):
+          if mirrorBoard[i]:
+            xPositions[4].append(i)
+        #turn 90 180 270 degrees for mirror
+        for i in range(3):
+          tmpBoard=self.turnDegreeBoard(mirrorBoard,i+1)
+          for m in range(9):
+            if tmpBoard[m]:
+              xPositions[i+5].append(m)
 
         for i in range(8):
           if len(xPositions[i])==0:
@@ -224,9 +234,22 @@ class TicTacToeAgent():
 
         util.raiseNotDefined()
 
-    def turnDegreeAndJudge(self,board,degree):
+    def turnMirrorBoard(self,board):
         newBoard=[False, False, False, False, False, False, False, False, False]
-        if degree==1: # 顺时针90
+        newBoard[0]=board[2]
+        newBoard[1]=board[1]
+        newBoard[2]=board[0]
+        newBoard[3]=board[5]
+        newBoard[4]=board[4]
+        newBoard[5]=board[3]
+        newBoard[6]=board[8]
+        newBoard[7]=board[7]
+        newBoard[8]=board[6]
+        return newBoard
+
+    def turnDegreeBoard(self,board,degree):
+        newBoard=[False, False, False, False, False, False, False, False, False]
+        if degree==1: #90
           newBoard[0]=board[6]
           newBoard[1]=board[3]
           newBoard[2]=board[0]
@@ -236,7 +259,7 @@ class TicTacToeAgent():
           newBoard[6]=board[8]
           newBoard[7]=board[5]
           newBoard[8]=board[2]
-        if degree==2: # 顺时针180
+        if degree==2: #180
           newBoard[0]=board[8]
           newBoard[1]=board[7]
           newBoard[2]=board[6]
@@ -246,7 +269,7 @@ class TicTacToeAgent():
           newBoard[6]=board[2]
           newBoard[7]=board[1]
           newBoard[8]=board[0]
-        if degree==3: # 顺时针270
+        if degree==3: #270
           newBoard[0]=board[2]
           newBoard[1]=board[5]
           newBoard[2]=board[8]
@@ -256,46 +279,6 @@ class TicTacToeAgent():
           newBoard[6]=board[0]
           newBoard[7]=board[3]
           newBoard[8]=board[6]
-        if degree==4: # 镜像0度
-          newBoard[0]=board[2]
-          newBoard[1]=board[1]
-          newBoard[2]=board[0]
-          newBoard[3]=board[5]
-          newBoard[4]=board[4]
-          newBoard[5]=board[3]
-          newBoard[6]=board[8]
-          newBoard[7]=board[7]
-          newBoard[8]=board[6]
-        if degree==5: # 镜像90度
-          newBoard[0]=board[8]
-          newBoard[1]=board[5]
-          newBoard[2]=board[2]
-          newBoard[3]=board[7]
-          newBoard[4]=board[4]
-          newBoard[5]=board[1]
-          newBoard[6]=board[6]
-          newBoard[7]=board[3]
-          newBoard[8]=board[0]
-        if degree==6: # 镜像180度
-          newBoard[0]=board[6]
-          newBoard[1]=board[7]
-          newBoard[2]=board[8]
-          newBoard[3]=board[3]
-          newBoard[4]=board[4]
-          newBoard[5]=board[5]
-          newBoard[6]=board[0]
-          newBoard[7]=board[1]
-          newBoard[8]=board[2]
-        if degree==7: # 镜像270度
-          newBoard[0]=board[0]
-          newBoard[1]=board[3]
-          newBoard[2]=board[6]
-          newBoard[3]=board[1]
-          newBoard[4]=board[4]
-          newBoard[5]=board[7]
-          newBoard[6]=board[2]
-          newBoard[7]=board[5]
-          newBoard[8]=board[8]
         return newBoard
         util.raiseNotDefined()
 
@@ -307,170 +290,9 @@ class randomAgent():
       If you like, you can also set both players to be randomAgent, then you can happily see two 
       random agents fight with each other.
     """
-    def __init__(self):
-        """ 
-          You can initialize some variables here, but please do not modify the input parameters.
-        """
-        "https://www.youtube.com/watch?v=h09XU8t8eUM"
-        "012"
-        "345"
-        "678"
-        "Secret:P = {A, BB, BC, CC, CB}"
-        {}
-        self.stateDict = {}
-        #Fingerprint
-        stateA=[(0,8),(1,3),(1,7),(0,1,6),(0,2,4),(0,2,7),(0,4,5),(0,1,3,4),(0,1,3,5),(0,1,3,8),(0,1,7,8),(0,2,6,8),(1,3,5,7),(0,1,4,5,6),(0,1,5,6,7),(0,1,5,6,8),(0,1,3,5,7,8)]
-        stateB=[(0,2),(0,4),(0,5),(1,4),(0,1,3),(1,3,5),(0,1,4,5),(0,1,4,6),(0,1,5,6),(0,1,6,7),(0,1,6,8),(0,2,4,7),(0,4,5,7),(0,1,3,5,8),(0,1,3,5,7)]
-        stateD=[(0,1,5),(0,1,7),(0,1,8)]
-        stateAB=[(0,1,4),(0,2,6),(1,3,4),(0,1,5,7),(0,1,5,8),]
-        stateAD=[(0,1)]
-        self.stateDict["A"]=stateA
-        self.stateDict["B"]=stateB
-        self.stateDict["D"]=stateD
-        self.stateDict["AB"]=stateAB
-        self.stateDict["AD"]=stateAD
-        self.winList=["CC","CB","BC","BB","A"]
-        "Empty is >>>C<<<-记住...."
-
-
     def getAction(self, gameState, gameRules):
-        gameBoards=gameState.boards
-        testBoard=[True, True, False, True, False, True, False, True, False]
-        print("Test:",self.judgeBoardState(testBoard))
-
-        result=""
-        for i in range(3):
-          result+=self.judgeBoardState(gameBoards[i])
-        
-        print("old",result)
         actions = gameState.getLegalActions(gameRules)
-
-        bestAction=random.choice(actions)
-        for action in actions:
-            successor=gameState.generateSuccessor(action)
-            newBoards=successor.boards
-            result=""
-            for i in range(3):
-              result+=self.judgeBoardState(newBoards[i])
-
-            if result in self.winList:
-              bestAction=action
-              print("new:",result)
-              break
-
-        return bestAction
-        
-        util.raiseNotDefined()
-
-
-    def judgeBoardState(self,board):
-        xPositions={}
-        for i in range(8):
-          xPositions[i]=[]
-
-        for i in range(9):
-          if board[i]:
-            xPositions[0].append(i)
-
-        for i in range(7):
-          tmpBoard=self.turnDegreeAndJudge(board,i+1)
-          for m in range(9):
-            if tmpBoard[m]:
-              xPositions[i+1].append(m)
-
-        for i in range(8):
-          if len(xPositions[i])==0:
-            return "C"
-          if tuple(xPositions[i]) in self.stateDict["A"]:
-            return "A"
-          if tuple(xPositions[i]) in self.stateDict["B"]:
-            return "B"
-          if len(xPositions[i])==1 and xPositions[i][0]==4:
-            return "CC"
-          if tuple(xPositions[i]) in self.stateDict["D"]:
-            return "D"
-          if tuple(xPositions[i]) in self.stateDict["AB"]:
-            return "AB"
-          if tuple(xPositions[i]) in self.stateDict["AD"]:
-            return "AD"
-        return ""
-
-        util.raiseNotDefined()
-
-    def turnDegreeAndJudge(self,board,degree):
-        newBoard=[False, False, False, False, False, False, False, False, False]
-        if degree==1: # 顺时针90
-          newBoard[0]=board[6]
-          newBoard[1]=board[3]
-          newBoard[2]=board[0]
-          newBoard[3]=board[7]
-          newBoard[4]=board[4]
-          newBoard[5]=board[1]
-          newBoard[6]=board[8]
-          newBoard[7]=board[5]
-          newBoard[8]=board[2]
-        if degree==2: # 顺时针180
-          newBoard[0]=board[8]
-          newBoard[1]=board[7]
-          newBoard[2]=board[6]
-          newBoard[3]=board[5]
-          newBoard[4]=board[4]
-          newBoard[5]=board[3]
-          newBoard[6]=board[2]
-          newBoard[7]=board[1]
-          newBoard[8]=board[0]
-        if degree==3: # 顺时针270
-          newBoard[0]=board[2]
-          newBoard[1]=board[5]
-          newBoard[2]=board[8]
-          newBoard[3]=board[1]
-          newBoard[4]=board[4]
-          newBoard[5]=board[7]
-          newBoard[6]=board[0]
-          newBoard[7]=board[3]
-          newBoard[8]=board[6]
-        if degree==4: # 镜像0度
-          newBoard[0]=board[2]
-          newBoard[1]=board[1]
-          newBoard[2]=board[0]
-          newBoard[3]=board[5]
-          newBoard[4]=board[4]
-          newBoard[5]=board[3]
-          newBoard[6]=board[8]
-          newBoard[7]=board[7]
-          newBoard[8]=board[6]
-        if degree==5: # 镜像90度
-          newBoard[0]=board[8]
-          newBoard[1]=board[5]
-          newBoard[2]=board[2]
-          newBoard[3]=board[7]
-          newBoard[4]=board[4]
-          newBoard[5]=board[1]
-          newBoard[6]=board[6]
-          newBoard[7]=board[3]
-          newBoard[8]=board[0]
-        if degree==6: # 镜像180度
-          newBoard[0]=board[6]
-          newBoard[1]=board[7]
-          newBoard[2]=board[8]
-          newBoard[3]=board[3]
-          newBoard[4]=board[4]
-          newBoard[5]=board[5]
-          newBoard[6]=board[0]
-          newBoard[7]=board[1]
-          newBoard[8]=board[2]
-        if degree==7: # 镜像270度
-          newBoard[0]=board[0]
-          newBoard[1]=board[3]
-          newBoard[2]=board[6]
-          newBoard[3]=board[1]
-          newBoard[4]=board[4]
-          newBoard[5]=board[7]
-          newBoard[6]=board[2]
-          newBoard[7]=board[5]
-          newBoard[8]=board[8]
-        return newBoard
-        util.raiseNotDefined()
+        return random.choice(actions)
 
 
 class keyboardAgent():

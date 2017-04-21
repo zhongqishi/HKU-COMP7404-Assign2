@@ -64,12 +64,12 @@ class ReflexAgent(Agent):
         baseScore = successorGameState.getScore()
         foods = currentGameState.getFood().asList()
 
-        maxDistance=-float("inf")
+        minDistance=-float("inf")
         for food in foods:
-            if maxDistance<-manhattanDistance(food,newPos):
-              maxDistance=-manhattanDistance(food,newPos)
+            if minDistance<-manhattanDistance(food,newPos):
+              minDistance=-manhattanDistance(food,newPos)
 
-        baseScore+=maxDistance
+        baseScore+=minDistance
 
         if newPos == currentGameState.getPacmanPosition():
             baseScore=-float("inf")
