@@ -1,3 +1,5 @@
+#Edit by SHI Zhongqi
+
 from util import manhattanDistance
 from game import Directions
 import random, util
